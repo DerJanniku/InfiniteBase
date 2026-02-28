@@ -26,7 +26,7 @@ futures = "0.3"
 tokio-stream = "0.1"
 parking_lot = "0.12"
 dotenv = "0.15"
-image = "0.24"
+image = "0.25"
 base64 = "0.21"
 
 [dev-dependencies]
