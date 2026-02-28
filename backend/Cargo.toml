@@ -27,7 +27,7 @@ tokio-stream = "0.1"
 parking_lot = "0.12"
 dotenv = "0.15"
 image = "0.24"
-base64 = "0.21"
+base64 = "0.22"
 
 [dev-dependencies]
 sqlx = { version = "0.7", features = ["runtime-tokio-native-tls", "postgres", "migrate"] }
