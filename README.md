@@ -1,72 +1,100 @@
-# 🧠 InfiniteBase - The Personal Canvas OS
+# InfiniteBase
 
-> **"Dein lokales visuelles Gehirn für Schule, Arbeit und Leben."**
+[![CI](https://github.com/DerJanniku/InfiniteBase/actions/workflows/ci.yml/badge.svg)](https://github.com/DerJanniku/InfiniteBase/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Status](https://img.shields.io/badge/Status-MVP%20Development-orange)](docs/ROADMAP.md)
 
-InfiniteBase ist ein Open-Source **Spatial OS** und ein **Visual File Explorer**, der die klassische, starre Ordnerstruktur durch ein unendliches, interaktives Canvas ersetzt. Die App ist **Local-first** konzipiert, läuft via Docker auf dem Localhost und ermöglicht die nahtlose Einbindung von KI-Agenten, die den Kontext auf dem Board lesen und aktiv mitgestalten können.
+InfiniteBase is a local-first infinite canvas workspace and visual file explorer.
+It combines spatial organization, file-native nodes, and API-first agent automation for personal knowledge work.
 
-![InfiniteBase Branding](https://raw.githubusercontent.com/DerJannik/.github/main/branding/infinitebase_banner.png)
+## Keywords
+Local-first, infinite canvas, visual file explorer, spatial knowledge management, Rust backend, Next.js, tldraw, self-hosted, BYOA (Bring Your Own Agent), privacy-first.
 
-## 🚀 Vision & Key Features
+## Problem Statement
+Traditional folder-based workflows are rigid and context-poor. Information is spread across files, notes, links, and tools, which increases friction when switching between school, work, and personal projects.
 
-InfiniteBase bricht mit traditionellen Paradigmen. Statt Dateien in tief verschachtelten Ordnern zu verstecken, platzierst du sie dort, wo sie für deinen Workflow Sinn ergeben.
+## Solution
+InfiniteBase provides a single spatial workspace where files and notes are represented as nodes on an infinite canvas. External agents can read context and perform controlled actions via API, while data remains local by default.
 
-- **Visual File Explorer:** PDFs, Videos, Bilder und Dokumente sind direkt auf dem Canvas abspielbar und scrollbar. 
-- **AI Agent API (BYOA):** "Bring Your Own Agent". Nutze Gemini, Antigravity oder lokale LLMs, die via API auf deinen Canvas-Kontext zugreifen, Nodes erstellen oder Inhalte zusammenfassen.
-- **Prompt-Nodes:** Steuere deine KI-Agenten visuell. Ziehe Linien zwischen einem Befehl (Prompt-Node) und deinen Dateien, um Aktionen auszulösen.
-- **FOS-Power (Schul-Modus):** Speziell für Schüler optimiert. iPad-Handschrift wird via OCR erkannt, Lernkarten werden automatisch generiert und Math-Formeln (Mitternachtsformel!) triggern interaktive Plots.
-- **OLED Black Design:** Ein minimalistisches, tiefschwarzes Interface mit einem dezenten Punktraster – schont die Augen und den Akku.
+## Current Scope
+- Infinite canvas frontend
+- Node CRUD API
+- File upload endpoint and file node creation
+- Soft delete behavior (Visual Trash model)
+- Agent context/action API stubs
 
-## 🛠 Tech-Stack
+## Architecture
+- Frontend: Next.js + React + tldraw
+- Backend: Rust + Axum + SQLx
+- Database: PostgreSQL
+- Vector store: Qdrant
+- Runtime: Docker Compose
 
-InfiniteBase setzt auf maximale Performance und Datensouveränität:
+See details:
+- [Architecture](docs/ARCHITECTURE.md)
+- [API](docs/API.md)
+- [Security](docs/SECURITY.md)
+- [Roadmap](docs/ROADMAP.md)
+- [AI Build Plan](docs/AI_BUILD_PLAN.md)
 
-| Komponente | Technologie | Zweck |
-| :--- | :--- | :--- |
-| **Backend** | [Rust](https://www.rust-lang.org/) (Axum) | High-Performance Datei-Operationen & API |
-| **Frontend** | [Next.js](https://nextjs.org/) + [tldraw](https://tldraw.dev/) | Infinite Canvas Engine |
-| **Datenbank** | [PostgreSQL](https://www.postgresql.org/) + [pgvector](https://github.com/pgvector/pgvector) | Relationale Daten & Vektor-Suche (RAG) |
-| **Vector DB** | [Qdrant](https://qdrant.tech/) | Skalierbares KI-Gedächtnis |
-| **Orchestrierung** | [Docker Compose](https://docs.docker.com/compose/) | One-Click Localhost Deployment |
+## Quick Start
+Prerequisites:
+- Docker + Docker Compose
+- Node.js 20+ (optional for frontend-only local dev)
 
-## 📦 Installation & Start
-
-Stelle sicher, dass **Docker** und **Docker Compose** installiert sind.
-
-1. **Repo klonen:**
-   ```bash
-   git clone https://github.com/DerJannik/InfiniteBase.git
-   cd InfiniteBase
-   ```
-
-2. **Starten:**
-   ```bash
-   docker-compose up --build
-   ```
-
-3. **Zugriff:**
-   Öffne [http://localhost:3000](http://localhost:3000) in deinem Browser (oder nutze den Electron-Wrapper).
-
-## 🤖 AI Agent Integration
-
-InfiniteBase bietet eine offene REST-API unter `/api/v1/canvas/context`. Externe Skripte (z.B. in Python) können das Board-JSON lesen, analysieren und neue Nodes zurückschreiben.
-
-```json
-{
-  "action": "create_node",
-  "type": "note",
-  "content": "Zusammenfassung der Mathestunde...",
-  "position": { "x": 500, "y": 200 }
-}
+Run full stack:
+```bash
+docker compose up --build
 ```
 
-## 📜 Lizenz & Community
+Service endpoints:
+- Frontend: `http://localhost:3000`
+- Backend: `http://localhost:8080`
+- Health: `http://localhost:8080/health`
+- Qdrant: `http://localhost:6333`
 
-Dieses Projekt lizenziert unter der **MIT-Lizenz**. InfiniteBase ist von der Community für die Community. 
+Frontend-only development:
+```bash
+cd frontend
+npm ci
+npm run dev
+```
 
-- **Mitwirken:** Forke das Repo und erstelle einen Pull Request.
-- **Diskussion:** Nutze die GitHub Discussions für Feature-Wünsche oder Fragen.
-- **Community-Name:** Wir nennen uns **Basers**.
+## API Overview
+Base URL: `http://localhost:8080`
 
----
+- `GET /health`
+- `GET /api/v1/nodes`
+- `POST /api/v1/nodes`
+- `GET /api/v1/nodes/:id`
+- `PUT /api/v1/nodes/:id`
+- `PATCH /api/v1/nodes/:id`
+- `DELETE /api/v1/nodes/:id`
+- `POST /api/v1/files/upload`
+- `GET /api/v1/canvas/context`
+- `POST /api/v1/agent/action`
 
-*Made with ❤️ by [DerJannik](https://github.com/DerJannik) | Local-First. Privacy-Focused.*
+Contract and payloads: [docs/API.md](docs/API.md)
+
+## Repository Structure
+- `frontend/` Next.js application
+- `backend/` Rust API service
+- `docs/` technical documentation
+- `.github/` CI and contribution templates
+
+## Project Status
+The repository is in active MVP development. Core architecture is in place, but major functionality, reliability, and production hardening tasks remain open.
+
+Track progress in Issues: <https://github.com/DerJanniku/InfiniteBase/issues>
+
+## Contribution
+- Read [Contributing Guide](docs/CONTRIBUTING.md)
+- Open feature/bug issues with clear reproduction steps
+- Keep pull requests scoped and documented
+
+## Maintainer
+- GitHub: [@DerJanniku](https://github.com/DerJanniku)
+- Contact: `jannik.maier.jm@proton.me`
+
+## License
+MIT. See [LICENSE](LICENSE).

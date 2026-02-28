@@ -1,13 +1,18 @@
 mod api;
 mod database;
 mod models;
+mod services;
 
+use api::AppState;
 use axum::{
     routing::{delete, get, patch, post, put},
     Json, Router,
 };
 use std::net::SocketAddr;
+use std::sync::Arc;
+use qdrant_client::qdrant_client::QdrantClient;
 use tower_http::cors::{Any, CorsLayer};
+use tower_http::services::ServeDir;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 #[tokio::main]
@@ -23,6 +28,15 @@ async fn main() -> anyhow::Result<()> {
 
     let db_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     let pool = database::connect(&db_url).await;
+
+    // Connect to Qdrant
+    let qdrant_url = std::env::var("QDRANT_URL").unwrap_or_else(|_| "http://qdrant:6333".into());
+    let qdrant_client = QdrantClient::from_url(&qdrant_url).build()?;
+    
+    let state = AppState {
+        db_pool: pool.clone(),
+        qdrant_client: Arc::new(qdrant_client),
+    };
 
     tracing::info!("Running database migrations...");
     sqlx::migrate!("./migrations")
@@ -44,10 +58,12 @@ async fn main() -> anyhow::Result<()> {
         .route("/api/v1/nodes/:id", patch(api::node_handler::patch_node))
         .route("/api/v1/nodes/:id", delete(api::node_handler::delete_node))
         .route("/api/v1/upload", post(api::node_handler::upload_file))
+        .route("/api/v1/files/upload", post(api::node_handler::upload_file))
         .route("/api/v1/canvas/context", get(api::node_handler::get_canvas_context))
         .route("/api/v1/agent/action", post(api::node_handler::agent_action))
+        .nest_service("/api/v1/previews", ServeDir::new("/app/uploads/previews"))
         .layer(cors)
-        .with_state(pool);
+        .with_state(state);
 
     let addr = SocketAddr::from(([0, 0, 0, 0], 8080));
     tracing::info!("InfiniteBase backend listening on {}", addr);

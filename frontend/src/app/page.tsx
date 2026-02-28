@@ -1,12 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Tldraw } from "tldraw";
-import "tldraw/tldraw.css";
+import { Tldraw, Editor } from "@tldraw/tldraw";
+import "@tldraw/tldraw/tldraw.css";
+import { Toaster } from "react-hot-toast";
+import { useFileUpload } from "@/hooks/useFileUpload";
 
 // InfiniteBase Canvas Component
 function InfiniteCanvas() {
   const [isReady, setIsReady] = useState(false);
+  const [editor, setEditor] = useState<Editor | null>(null);
+  const { handleDrop } = useFileUpload({ editor });
 
   useEffect(() => {
     setIsReady(true);
@@ -14,16 +18,7 @@ function InfiniteCanvas() {
 
   if (!isReady) {
     return (
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          height: "100vh",
-          backgroundColor: "#000000",
-          color: "#ffffff",
-        }}
-      >
+      <div className="flex items-center justify-center h-screen bg-black text-white">
         <div className="loading-spinner" />
       </div>
     );
@@ -31,13 +26,26 @@ function InfiniteCanvas() {
 
   return (
     <div 
-      style={{ 
-        position: "fixed", 
-        inset: 0,
-        backgroundColor: "#000000",
-      }}
+      className="canvas-container"
+      onDrop={handleDrop}
+      onDragOver={(e) => e.preventDefault()}
     >
-      <Tldraw hideUi={false} />
+      <Tldraw 
+        inferDarkMode
+        persistenceKey="infinitebase-main"
+        autoFocus
+        onMount={(editor) => setEditor(editor)}
+      />
+      <Toaster 
+        position="bottom-right"
+        toastOptions={{
+          style: {
+            background: "#1a1a1a",
+            color: "#fff",
+            border: "1px solid #333",
+          },
+        }}
+      />
     </div>
   );
 }
@@ -49,4 +57,3 @@ export default function Home() {
     </main>
   );
 }
-

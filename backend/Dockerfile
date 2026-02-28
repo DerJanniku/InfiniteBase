@@ -22,6 +22,8 @@ RUN apt-get update && apt-get install -y \
     ca-certificates \
     curl \
     libpq5 \
+    poppler-utils \
+    ffmpeg \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /app/target/release/infinitebase-backend /app/infinitebase-backend

@@ -1,6 +1,6 @@
-use sqlx::PgPool;
-use qdrant_client::qdrant::QdrantClient;
 use std::sync::Arc;
+use qdrant_client::qdrant_client::QdrantClient;
+use sqlx::PgPool;
 
 pub mod node_handler;
 

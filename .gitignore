@@ -7,6 +7,7 @@ backend/Cargo.lock
 # Node / Next.js
 frontend/node_modules/
 frontend/.next/
+frontend/.next.broken.*/
 frontend/out/
 frontend/build/
 frontend/.env*
