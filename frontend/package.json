@@ -15,7 +15,7 @@
     "@tldraw/tldraw": "latest",
     "react-hot-toast": "^2.4.1",
     "axios": "^1.6.5",
-    "zustand": "^5.0.11",
+    "zustand": "^5.0.12",
     "clsx": "^2.1.0",
     "lucide-react": "^0.312.0"
   },
