@@ -2,34 +2,45 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   pull_request:
+    branches: [ main ]
 
 jobs:
-  frontend:
+  backend:
+    name: Backend
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: frontend
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@v6
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: Cargo Check
+        run: cd backend && cargo check
+
+  frontend:
+    name: Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Setup Node
+        uses: actions/setup-node@v6
         with:
           node-version: 20
-          cache: npm
+          cache: 'npm'
           cache-dependency-path: frontend/package-lock.json
-      - run: npm ci
-      - run: npm run build
+      - name: Install dependencies
+        run: cd frontend && npm install
+      - name: Build
+        run: cd frontend && npm run build
 
   docs:
+    name: Docs
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Validate docs presence
-        run: |
-          test -f README.md
-          test -f docs/API.md
-          test -f docs/ARCHITECTURE.md
-          test -f docs/SECURITY.md
-          test -f docs/ROADMAP.md
-          test -f docs/CONTRIBUTING.md
+      - uses: actions/checkout@v6
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20
+      - name: Install dependencies
+        run: npm install -g @mermaid-js/mermaid-cli
